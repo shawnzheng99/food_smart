@@ -15,7 +15,7 @@
         var keys = [];
         var currentKey;
         var db;
-        var listref
+        var listref;
 
         // Initialize Firebase
         var config = {
@@ -27,31 +27,50 @@
             messagingSenderId: "1093830148119"
         };
         firebase.initializeApp(config);
-        var uid = "7ZSwmnir7vSyiLwolwaUxAz6z8H2"
+        var uid = "7ZSwmnir7vSyiLwolwaUxAz6z8H2";
 
         db = firebase.database();
-        //load list into javascript
-        listref = db.ref("/" + uid + "/Tracking").once('value').then(function(snapshot) {
-            list = snapshot.val();
-            for (var key in list) {
-                keys.push(key)
-                displayItem(key, list[key])
-            }
-        });
 
-        var expDate
-
-        function displayCurrent(key) {
-            firebase.database().ref('/' + uid + '/Tracking/' + key + '/expDate').once('value').then(function(snapshot) {
-                var daysLeft = getDaysLeft(snapshot.val());
-
+//        function loadList() {}
+            listref = db.ref("/" + uid + "/Tracking/").orderByChild("expDate").once('value').then(function(snapshot) {
+                list = snapshot.val();
+                snapshot.forEach(function(child) {
+                    var key = child.key;
+                    keys.push(key);
+                    list[key].daysLeft = getDaysLeft(list[key]['expDate']);
+                    displayItem(key, list[key])
+                });
+//                console.log(list);
             });
-        }
+//        }
 
+        function displayDetail(days) {
+            if (days <= 0) {
+                console.log(days)
+                $('#detailPic').css("background-color", "red")
+            } else if (days <= 5) {
+                console.log(days)
+                $('#detailPic').css("background-color", "yellow")
+            } else {
+                console.log(days)
+                $('#detailPic').css("background-color", "green")
+            }
+        }
 
         function displayItem(key, item) {
             var list = document.getElementById("list");
             var row = list.insertRow();
+
+            $(row).click(function (){
+                displayDetail(item['daysLeft']);
+            });
+            if (item['daysLeft'] <= 0) {
+                $(row).css("background-color", "red")
+            } else if (item['daysLeft'] <= 5) {
+                $(row).css("background-color", "yellow")
+            } else {
+                $(row).css("background-color", "green")
+            }
             row.id = key;
             var cell1 = row.insertCell();
             var cell2 = row.insertCell();
@@ -64,8 +83,8 @@
             cell3.style.textAlign = "right"
         }
 
-        function test() {
-            alert(getDaysLeft('2017-5-16'));
+        function test(a) {
+            alert(a);
         }
 
 
