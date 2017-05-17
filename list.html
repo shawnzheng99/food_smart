@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Tracking</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="./list.css">
+    <script src="https://www.gstatic.com/firebasejs/3.9.0/firebase.js"></script>
+    <script>
+
+        var list;
+        var keys = [];
+        var currentKey;
+        var db;
+        var listref
+
+        // Initialize Firebase
+        var config = {
+            apiKey: "AIzaSyDXBcfWwEiAaH6hvW0UGTiXuIeAN_iSR1U",
+            authDomain: "mytest-4a947.firebaseapp.com",
+            databaseURL: "https://mytest-4a947.firebaseio.com",
+            projectId: "mytest-4a947",
+            storageBucket: "mytest-4a947.appspot.com",
+            messagingSenderId: "1093830148119"
+        };
+        firebase.initializeApp(config);
+        var uid = "7ZSwmnir7vSyiLwolwaUxAz6z8H2"
+
+        db = firebase.database();
+        //load list into javascript
+        listref = db.ref("/" + uid + "/Tracking").once('value').then(function(snapshot) {
+            list = snapshot.val();
+            for (var key in list) {
+                keys.push(key)
+                displayItem(key, list[key])
+            }
+        });
+
+        var expDate
+
+        function displayCurrent(key) {
+            firebase.database().ref('/' + uid + '/Tracking/' + key + '/expDate').once('value').then(function(snapshot) {
+                var daysLeft = getDaysLeft(snapshot.val());
+
+            });
+        }
+
+
+        function displayItem(key, item) {
+            var list = document.getElementById("list");
+            var row = list.insertRow();
+            row.id = key;
+            var cell1 = row.insertCell();
+            var cell2 = row.insertCell();
+            var cell3 = row.insertCell();
+
+            cell1.innerHTML = item.name;
+            cell2.innerHTML = item.quantity;
+            cell3.innerHTML = item.percentLeft + "% " + "<img src=\"./pics/minus.png\" style=\"height:20px;\" onclick=\"consume(event)\"></img>";
+            cell2.style.textAlign = "center";
+            cell3.style.textAlign = "right"
+        }
+
+        function test() {
+            alert(getDaysLeft('2017-5-16'));
+        }
+
+
+        // date format: yyyy-mm-dd
+        function getDaysLeft(date)
+        {
+            var d = new Date(date);
+            var userTimezoneOffset = d.getTimezoneOffset() * 60000;
+            d = new Date(d.getTime() + userTimezoneOffset);
+            today = new Date();
+            var oneDay = 24*60*60*1000;
+
+            return Math.ceil((d.getTime() - today.getTime())/(oneDay))
+        }
+
+        function consume(event){
+            var source = event.target || event.srcElement
+            var key = $(source).parent().parent().attr('id')
+        }
+
+//        onload = displayAll
+    </script>
+
+    <script>
+
+    </script>
+</head>
+<body>
+
+<nav class="navbar navbar-inverse" style="background-color: #77bb99; color: #ffffee; border:1px solid #ffffee">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar"
+                    style="background-color: #77bb99; color: #ffffee; border:1px solid #ffffee;">
+                <span class="icon-bar" style="color: #ffffee;"></span>
+                <span class="icon-bar" style="color: #ffffee;"></span>
+                <span class="icon-bar" style="color: #ffffee;"></span>
+            </button>
+            <a class="navbar-brand" href="#" style="background-color: #77bb99; color: #ffffee;">Food Smart</a>
+        </div>
+        <div class="collapse navbar-collapse" id="myNavbar"
+             style="background-color: #77bb99; color: #ffffee; border:1px hidden #ffffee;">
+            <ul class="nav navbar-nav">
+                <li class="active"><a href="#" style="background-color: #ffffff; color: #77bb99;">Tracking</a></li>
+                <li class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#"
+                       style="background-color: #77bb99; color: #ffffee;">Report<span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="#" style="background-color: #77bb99; color: #ffffee;">Monthly</a></li>
+                        <li><a href="#" style="background-color: #77bb99; color: #ffffee;">History</a></li>
+                    </ul>
+                </li>
+                <li><a href="#" style="background-color: #77bb99; color: #ffffee;">Others</a></li>
+
+            </ul>
+
+        </div>
+    </div>
+</nav>
+
+
+<div id="all" class="container-fluid all">
+
+    <div id="detail" class="col-md-6 col-lg-6 col-md-offset-3 col-lg-offset-3 detail">
+        <img src="./pics/circle.png" onclick="test()" style="height:40px;position:absolute;bottom:5px;left:5px;"></img>
+        <img src="./pics/plus_1.png" style="height:40px;position:absolute;top:5px;left:5px;"></img>
+        <img src="./pics/trash.png" style="height:40px;position:absolute;top:5px;right:5px;"></img>
+        <img src="./pics/close.png" onclick="deleteCurrent()" style="height:40px;position:absolute;bottom:40px;right:5px;"></img>
+        <div id="detailPic" class = "detailPic"><p id="detailText" class="detailText"></p></div>
+        <div id="tableHeadDiv" class="tableHeadDiv">
+            <table class="table" style="margin:0;">
+                <thead>
+                <tr>
+                    <th>Item Name</th>
+                    <th>Quantity</th>
+                    <th style="text-align:right;">% Left</th>
+                </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+
+    <div id="listDiv" class="col-md-6 col-lg-6 col-md-offset-3 col-lg-offset-3 listDiv">
+        <table class="table">
+
+            <tbody id="list">
+
+            </tbody>
+        </table>
+
+
+    </div>
+
+</div>
+</body>
+</html>
