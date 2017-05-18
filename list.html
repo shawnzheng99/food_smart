@@ -11,7 +11,14 @@
     <script src="https://www.gstatic.com/firebasejs/3.9.0/firebase.js"></script>
     <script>
 
-        var list;
+        var foodColor0         ='red'
+        var foodColor0Selected ='pink'
+        var foodColor1         ='yellow'
+        var foodColor1Selected ='lightyellow'
+        var foodColor2         ='green'
+        var foodColor2Selected ='lightgreen'
+
+        var foodList;
         var keys = [];
         var currentKey;
         var db;
@@ -31,45 +38,60 @@
 
         db = firebase.database();
 
-//        function loadList() {}
-            listref = db.ref("/" + uid + "/Tracking/").orderByChild("expDate").once('value').then(function(snapshot) {
-                list = snapshot.val();
-                snapshot.forEach(function(child) {
-                    var key = child.key;
-                    keys.push(key);
-                    list[key].daysLeft = getDaysLeft(list[key]['expDate']);
-                    displayItem(key, list[key])
-                });
-//                console.log(list);
+        listref = db.ref("/" + uid + "/Tracking/").orderByChild("expDate").once('value').then(function(snapshot) {
+            foodList = snapshot.val();
+            snapshot.forEach(function(child) {
+                var key = child.key;
+                keys.push(key);
+                foodList[key].daysLeft = getDaysLeft(foodList[key]['expDate']);
+                displayItem(key, foodList[key])
             });
-//        }
+        });
 
-        function displayDetail(days) {
+        //display datail of item
+        function displayDetail(key) {
+            var days
+            if (currentKey) {
+                days = foodList[currentKey]['daysLeft']
+                if (days <= 0) {
+                    $('#'+currentKey).css("background-color", foodColor0)
+                } else if (days <= 5) {
+                    $('#'+currentKey).css("background-color", foodColor1)
+                } else {
+                    $('#'+currentKey).css("background-color", foodColor2)
+                }
+            }
+            currentKey =key;
+            days = foodList[key]['daysLeft']
             if (days <= 0) {
-                console.log(days)
-                $('#detailPic').css("background-color", "red")
+                $('#'+key).css("background-color", foodColor0Selected)
+                $('#detailPic').css("background-color", foodColor0)
+                $('#detailText').text('Expired')
             } else if (days <= 5) {
-                console.log(days)
-                $('#detailPic').css("background-color", "yellow")
+                $('#'+key).css("background-color", foodColor1Selected)
+                $('#detailPic').css("background-color", foodColor1)
+                $('#detailText').text(days + ' days left')
             } else {
-                console.log(days)
-                $('#detailPic').css("background-color", "green")
+                $('#'+key).css("background-color", foodColor2Selected)
+                $('#detailPic').css("background-color", foodColor2)
+                $('#detailText').text(days + ' days left')
             }
         }
+
 
         function displayItem(key, item) {
             var list = document.getElementById("list");
             var row = list.insertRow();
 
             $(row).click(function (){
-                displayDetail(item['daysLeft']);
+                displayDetail(key);
             });
             if (item['daysLeft'] <= 0) {
-                $(row).css("background-color", "red")
+                $(row).css("background-color", foodColor0)
             } else if (item['daysLeft'] <= 5) {
-                $(row).css("background-color", "yellow")
+                $(row).css("background-color", foodColor1)
             } else {
-                $(row).css("background-color", "green")
+                $(row).css("background-color", foodColor2)
             }
             row.id = key;
             var cell1 = row.insertCell();
@@ -78,7 +100,40 @@
 
             cell1.innerHTML = item.name;
             cell2.innerHTML = item.quantity;
-            cell3.innerHTML = item.percentLeft + "% " + "<img src=\"./pics/minus.png\" style=\"height:20px;\" onclick=\"consume(event)\"></img>";
+
+            var pctText = $('<span />');
+            $(pctText).text(item['percentLeft'] + '% ')
+
+            var consumeB = $('<button />');
+            $(consumeB).addClass('btn btn-default btn-sm');
+            $(consumeB).html('<span class=\"glyphicon glyphicon-minus\"></span>');
+            $(consumeB).click(function (event){
+                event.stopPropagation();
+                //function for consuming 5% of a food item
+                var pctLeft = foodList[key]['percentLeft'];
+                if (pctLeft <=5) {
+                    //put item into history
+                    foodList[key]['percentLeft'] = 0;
+                    $(row).remove()
+                    $('#detailPic').css("background-color", 'white')
+                    $('#detailText').text('')
+                    var update = {};
+                    var newKey = db.ref('/'+uid+'/History/').push().key
+                    var update = {};
+                    update[newKey] = foodList[key]
+                    db.ref('/'+uid+'/History/').update(update);
+                    db.ref('/'+uid+'/Tracking/' + key + '/').remove()
+                } else {
+                    // decrement item
+                    foodList[key]['percentLeft'] -= 5;
+                    $(pctText).text(foodList[key]['percentLeft'] + '% ')
+                    db.ref("/" + uid + "/Tracking/" + key + "/").update({'percentLeft':foodList[key]['percentLeft']})
+                }
+            });
+
+            $(cell3).append($(pctText));
+            $(cell3).append($(consumeB));
+
             cell2.style.textAlign = "center";
             cell3.style.textAlign = "right"
         }
@@ -87,6 +142,23 @@
             alert(a);
         }
 
+        function deleteCurrent() {
+            $('#'+currentKey).remove()
+            $('#detailPic').css("background-color", 'white')
+            $('#detailText').text('')
+            db.ref("/" + uid + "/Tracking/" + currentKey + "/").remove()
+        }
+
+        function trashCurrent() {
+            $('#'+currentKey).remove()
+            $('#detailPic').css("background-color", 'white')
+            $('#detailText').text('')
+            var newKey = db.ref('/'+uid+'/History/').push().key
+            var update = {};
+            update[newKey] = foodList[currentKey]
+            db.ref('/'+uid+'/History/').update(update);
+            db.ref('/'+uid+'/Tracking/' + currentKey + '/').remove()
+        }
 
         // date format: yyyy-mm-dd
         function getDaysLeft(date)
@@ -98,11 +170,6 @@
             var oneDay = 24*60*60*1000;
 
             return Math.ceil((d.getTime() - today.getTime())/(oneDay))
-        }
-
-        function consume(event){
-            var source = event.target || event.srcElement
-            var key = $(source).parent().parent().attr('id')
         }
 
 //        onload = displayAll
@@ -149,10 +216,9 @@
 <div id="all" class="container-fluid all">
 
     <div id="detail" class="col-md-6 col-lg-6 col-md-offset-3 col-lg-offset-3 detail">
-        <img src="./pics/circle.png" onclick="test()" style="height:40px;position:absolute;bottom:5px;left:5px;"></img>
-        <img src="./pics/plus_1.png" style="height:40px;position:absolute;top:5px;left:5px;"></img>
-        <img src="./pics/trash.png" style="height:40px;position:absolute;top:5px;right:5px;"></img>
-        <img src="./pics/close.png" onclick="deleteCurrent()" style="height:40px;position:absolute;bottom:40px;right:5px;"></img>
+        <button type="button" class="btn btn-default" style="height:40px;position:absolute;top:5px;left:5px;"><span class="glyphicon glyphicon-plus"></span></button>
+        <button type="button" onclick="trashCurrent()" class="btn btn-default" style="height:40px;position:absolute;top:5px;right:5px;"><span class="glyphicon glyphicon-trash"></span></button>
+        <button type="button" onclick="deleteCurrent()" class="btn btn-default" style="height:40px;position:absolute;bottom:40px;right:5px;"><span class="glyphicon glyphicon-remove"></span></button>
         <div id="detailPic" class = "detailPic"><p id="detailText" class="detailText"></p></div>
         <div id="tableHeadDiv" class="tableHeadDiv">
             <table class="table" style="margin:0;">
