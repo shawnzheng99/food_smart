@@ -7,6 +7,28 @@
             border:1px solid #d3d3d3;
             background-color: #ffffff;
         }
+
+        #b1 {
+            position: absolute;
+            left: 60px;
+            top: 350px;
+        }
+        #b2 {
+            position: absolute;
+            left: 20px;
+            top: 380px;
+        }
+        #b3 {
+            position: absolute;
+            left: 80px;
+            top: 380px;
+        }
+        #b4 {
+            position: absolute;
+            left: 50px;
+            top: 410px;
+        }
+
     </style>
 
 </head>
@@ -29,7 +51,7 @@
             this.canvas.width = window.innerWidth;
             this.canvas.height = window.innerHeight;
             if (this.canvas.width >= 500) {
-                this.canvas.width  = 320;
+                this.canvas.width  = 640;
                 this.canvas.height = 480;
             }
             this.context = this.canvas.getContext("2d");
@@ -166,10 +188,10 @@
     }
 </script>
 <div style="text-align:center;width:320px;">
-    <button onmousedown="move('up')" onmouseup="clearmove()" ontouchstart="move('up')">UP</button><br><br>
-    <button onmousedown="move('left')" onmouseup="clearmove()" ontouchstart="move('left')">LEFT</button>
-    <button onmousedown="move('right')" onmouseup="clearmove()" ontouchstart="move('right')">RIGHT</button><br><br>
-    <button onmousedown="move('down')" onmouseup="clearmove()" ontouchstart="move('down')">DOWN</button>
+    <button id="b1" onmousedown="move('up')" onmouseup="clearmove()" ontouchstart="move('up')">UP</button><br><br>
+    <button id="b2"onmousedown="move('left')" onmouseup="clearmove()" ontouchstart="move('left')">LEFT</button>
+    <button id="b3"onmousedown="move('right')" onmouseup="clearmove()" ontouchstart="move('right')">RIGHT</button><br><br>
+    <button id="b4"onmousedown="move('down')" onmouseup="clearmove()" ontouchstart="move('down')">DOWN</button>
 
 </div>
 
