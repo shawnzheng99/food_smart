@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<!--
+author: Chongyang Zheng Shawn
+Date: May 17, 2017
+Version: 1.3
+-->
+<html lang="en">
+
+<head>
+    <title>Food Smart</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link href="style/datepicker.css" rel="stylesheet" type="text/css"/>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.2.1.js" integrity="sha256-DZAnKJ/6XZ9si04Hgrsxu/8s717jcIzLy3oi35EouyE=" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
+    <!--datepicker with past date disabled-->
+    <script>
+        $( function() {
+            $( "#expireDate" ).datepicker({
+                minDate: 0,
+                inline: true,
+                nextText: '&rarr;',
+                prevText: '&larr;',
+                showOtherMonths: true,
+                dayNamesMin: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+            });
+        });
+    </script>
+    <script src="https://www.gstatic.com/firebasejs/4.0.0/firebase.js"></script>
+    <script src="js/addNewItem.js"></script>
+
+</head>
+
+<body >
+
+    <!--Navbar-->
+    <nav class="navbar navbar-inverse" style="background-color: #77bb99; color: #ffffee; border:1px solid #ffffee">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar" style="background-color: #77bb99; color: #ffffee; border:1px solid #ffffee;">
+                    <span class="icon-bar" style="color: #ffffee;"></span>
+                    <span class="icon-bar" style="color: #ffffee;"></span>
+                    <span class="icon-bar" style="color: #ffffee;"></span>
+                </button>
+                <a class="navbar-brand" href="index.html" style="background-color: #77bb99; color: #ffffee;">Food Smart</a>
+            </div>
+            <div class="collapse navbar-collapse" id="myNavbar" style="background-color: #77bb99; color: #ffffee; border:1px hidden #ffffee;">
+                <ul class="nav navbar-nav">
+                    <li class="active"><a href="track.html" style="background-color: #ffffee; color: #77bb99;">Tracking</a></li>
+                    <li class="dropdown">
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="monthlyReport.html" style="background-color: #77bb99; color: #ffffee;">Report<span class="caret"></span></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="monthlyReport.html" style="background-color: #77bb99; color: #ffffee;">Monthly</a></li>
+                            <li><a href="historyReport.html" style="background-color: #77bb99; color: #ffffee;">History</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="others.html" style="background-color: #77bb99; color: #ffffee;">Others</a></li>
+
+                </ul>
+
+            </div>
+        </div>
+    </nav>
+<!--end of navbar-->
+
+    <div class="container">
+        <br>
+        <div class="row">
+            <div class="col-sm-3"></div>
+            <!--3 small column to make body centre-->
+            <div class="col-sm-6">
+                <form>
+                    <table class="table">
+                        <!--input form for add new item -->
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th><strong>Add new food item</strong></th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+
+                        <!--TODO: delete class, id, style, and js if using alert.-->
+                            <tr class="itmName">
+                                <td><label for="foodName">Food Name:</label></td>
+                                <td><div id="errName"></div>
+                                    <input type="text" class="form-control" name="foodName" id="foodName" placeholder="Please enter food name" onblur="valiName()"></td>
+                            </tr>
+
+                            <tr>
+                                <td><label for="amount">Amount :</label></td>
+                                <td><input type="text" class="form-control" name="amount" id="amount" placeholder="Please enter amount of food with units"></td>
+                            </tr>
+                        <!--TODO: class name-->
+                            <tr class="itmPrice">
+                                <td><label for="price">Price:</label></td>
+                                <td><div id="errPrice"></div>
+                                    <input type="number" class="form-control" name="price" id="price" placeholder="Please enter the total price" onblur="valiPrice()"></td>
+                            </tr>
+                            <tr>
+                                <td><label for="expireDate">Expire Date:</label></td>
+
+                                <td><input type="text" class="form-control" name="expireDate" id="expireDate"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </form>
+
+                <button type="submit" class="btn btn-warning btn-block" onclick="send()">Submit</button>
+                <a href="track.html" class="btn btn-warning btn-block">Cancel</a><br>
+            </div>
+            <div class="col-sm-3"></div>
+            <!--3 small column to make body centre-->
+        </div>
+    </div>
+
+</body>
+
+</html>
