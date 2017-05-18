@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="style/style.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <!--<script>-->
+        <!--function $(id){-->
+            <!--var element = document.getElementById(id);-->
+            <!--if( element == null ){-->
+                <!--alert( "Programmer error:" + id + " does not exist.");-->
+            <!--}-->
+            <!--return element;-->
+        <!--}-->
+
+    <!--</script>-->
+    <title>Register</title>
+</head>
+
+<body>
+    <h1 class="registerHeading">Food Smart
+
+            <form id="wholeForm">
+
+                <div id="itmUsername">
+                    <div id="errUesrname">
+
+                    </div>
+                    <input type="text" name="name" class="form" id="username" placeholder="Username">
+                    <br><br>
+                </div>
+
+                <div id="itmPw">
+                    <div id="errPw">
+
+                    </div>
+                    <input type="text" name="pw" class="form" id="password" placeholder="Password">
+                    <br><br>
+                </div>
+
+                <div id="itmConfirmPw">
+                    <div id="errConfirmPw">
+
+                    </div>
+                    <input type="text" name="conPw" class="form" id="confirmPw" placeholder="Confirm password">
+                    <br><br>
+                </div>
+
+                <div id="itmSize">
+                    <div id="errSzie">
+
+                    </div>
+                    <input type="text" name="fsize" class="form" id="size" placeholder="Family Size(optional)">
+                    <br><br>
+                </div>
+
+                <div id="itmEmail">
+                    <div id="errEmail">
+
+                    </div>
+                    <input type="text" name="emails" class="form" id="email" placeholder="Email">
+                    <br><br>
+                </div>
+
+
+                <div class="row">
+                    <button onclick="validAll()" class="btn btn-default">Sumbit</button><br><br>
+                    <a class="btn btn-default" href="LandingPage.html">Cancel</a>
+                </div>
+
+            </form>
+    </h1>
+<script>
+
+
+
+    function validAll(){
+
+        //---
+        if (!validUsername($("#username").val())){
+            $("itmUsername").className="error";
+            $("errUsername").innerHTML="Please enter your username";
+        }
+        else{
+            $("itmUsername").className="";
+            $("errUsername").innerHTML="";
+        }
+
+        //--
+
+        if (!validateEmail($("#email").val())){
+            $("itmEmail").className="error";
+            $("errEmail").innerHTML="Please enter your email address";
+        }
+        else{
+            $("itmEmail").className="";
+            $("errEmail").innerHTML="";
+        }
+
+        //---
+
+        if(!validatePw($("#password").val())){
+            $("itmPw").className="error";
+            $("errPw").innerHTML="Password should contains at least one number," +
+                " one lower case letter, upper case letter and 6-digits long";
+        }
+        else{
+            $("itmPw").className="";
+            $("errPw").innerHTML="";
+        }
+
+        //---
+
+        if(validatePw($("#password").val()) != confirmPw($("#confirmPw").val())) {
+            $("itmConfirmPw".className = "error");
+            $("errConfirmPw").innerHTML = "Passwords do not match!";
+        }
+        else{
+            $("itmConfirmPw").classname = "";
+            $("errConfirmPw").innerHTML="";
+        }
+
+        //---
+
+        if(!validSize($("#size").val())){
+            $("itmSize").className="error";
+            $("errSize").innerHTML="Please enter size of your family";
+        }
+        else{
+            $("itmSize").className="";
+            $("errSize").innerHTML="";
+        }
+
+
+        //return validUsername($("username").value) && validateEmail($("email").value)
+          //  &&validatePw($("password").value)
+            //&& validSize($("size").value);}
+
+        form.action="LandingPage.html";
+        form.submit();
+    }
+
+
+    //--------------------------------validation-------------------------------------
+    // username validation!
+    function validUsername(username){
+        if(username.val.length!= 0 )
+            return true;
+        else
+            return false;
+    }
+    //email validation
+
+    function validateEmail(email) {
+        var pattern = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        return pattern.test(email) || email.val.length != 0;
+    }
+
+    //password validation
+    function validatePw(pw){
+        var pwRegex = new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{6,})");
+        return pwRegex.test(pw);
+    }
+
+    //password confirm validation
+    function confirmPw(pw){
+        var pwRegex = new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{6,})");
+        return pwRegex.test(pw);
+    }
+
+    //family size validation
+    function validSize(size){
+        if(size >= 1 && size <= 100)
+            return ture;
+        else{
+            return false;
+        }
+    }
+
+</script>

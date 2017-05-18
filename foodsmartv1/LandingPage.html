@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="style/style.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <title>Landing Page</title>
+    <style>
+
+         body {
+             background: url(pic/b1.jpg) no-repeat fixed;
+             background-position: 50% 50%;
+             background-size: 100% 100%;
+         }
+
+         .container {
+             text-align: center;
+             padding-top: 30px;
+         }
+
+         h1{
+             font-size: 70px;
+         }
+
+         @media only screen and (max-width: 400px) {
+            body {
+                background: url(pic/bkgd.jpg) no-repeat fixed;
+                background-size: 100% 100%;
+
+            }
+             .container {
+                 text-align: center;
+                 padding-top: 220px;
+             }
+             h1{
+                 font-size:32px;
+             }
+        }
+
+    </style>
+</head>
+
+<body>
+
+
+
+    <div class="container">
+        <br>
+
+        <div class="row">
+            <h1>Food Smart</h1>
+            <div class="col-sm-3"></div>
+            <div class="col-sm-6">
+                <form>
+                    <input type="text" name="username" class="form" placeholder="Username">
+                    <br><br>
+                    <input type="text" name="password" class="form" placeholder="Password">
+                    <br><br>
+                </form>
+                <a class="btn btn-default" href="track.html">Sign in</a><br><br>
+                <p class="or">Or<br><br>
+                    <a class="btn btn-default" href="register.html">Sign up</a>
+            </div>
+        </div>
+        <div class="col-sm-3"></div>
+    </div>

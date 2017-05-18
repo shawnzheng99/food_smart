@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Food Smart</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="./style/list.css">
+    <script>
+        function displayBottom() {
+            var list = document.getElementById("list")
+            loadList()
+        }
+        
+        function loadList() {
+            for (let i = 0; i<60; i++) {
+                displayItem(i);
+            }
+            
+
+        }
+        
+        function displayItem(i) {
+            var list = document.getElementById("list")
+            var row = list.insertRow()
+            var cell1 = row.insertCell()
+            var cell2 = row.insertCell()
+            var cell3 = row.insertCell()
+            
+            cell1.innerHTML = "Apple"
+            cell2.innerHTML = "5 lb"
+            cell3.innerHTML = "50% " + "<img src=\"./pic/minus.png\" style=\"height:20px;\"></img>"
+            cell2.style.textAlign = "center"
+            cell3.style.textAlign = "right"
+            if (i < 3) {
+                row.style.backgroundColor = "rgb(254,48,68)"
+            }
+            else if (i < 7) {
+                row.style.backgroundColor = "rgb(247,249,16)"
+            }
+            else {
+                row.style.backgroundColor = "rgb(0,255,0)"
+            }
+        }
+
+        function displayAll() {
+            loadList()
+        }
+        
+        onload = displayAll
+    </script>
+</head>
+<body>
+
+<!--Navbar-->
+<nav class="navbar navbar-inverse" style="background-color: #77bb99; color: #ffffee; border:1px solid #ffffee">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar" style="background-color: #77bb99; color: #ffffee; border:1px solid #ffffee;">
+                <span class="icon-bar" style="color: #ffffee;"></span>
+                <span class="icon-bar" style="color: #ffffee;"></span>
+                <span class="icon-bar" style="color: #ffffee;"></span>
+            </button>
+            <a class="navbar-brand" href="index.html" style="background-color: #77bb99; color: #ffffee;">Food Smart</a>
+        </div>
+        <div class="collapse navbar-collapse" id="myNavbar" style="background-color: #77bb99; color: #ffffee; border:1px hidden #ffffee;">
+            <ul class="nav navbar-nav">
+                <li class="active"><a href="track.html" style="background-color: #ffffee; color: #77bb99;">Tracking</a></li>
+                <li class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="monthlyReport.html" style="background-color: #77bb99; color: #ffffee;">Report<span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="monthlyReport.html" style="background-color: #77bb99; color: #ffffee;">Monthly</a></li>
+                        <li><a href="historyReport.html" style="background-color: #77bb99; color: #ffffee;">History</a></li>
+                    </ul>
+                </li>
+                <li><a href="others.html" style="background-color: #77bb99; color: #ffffee;">Others</a></li>
+
+            </ul>
+
+        </div>
+    </div>
+</nav>
+
+
+
+<div id = "all" class = "container-fluid all">
+
+	<div id = "detail" class = "col-md-6 col-lg-6 col-md-offset-3 col-lg-offset-3 detail" >
+		<a href="addFood.html"> <img src="./pic/plus_1.png" style="height:40px;position:absolute;top:5px;left:5px;"></img></a>
+		<img src="./pic/trash.png" style="height:40px;position:absolute;top:5px;right:5px;"></img>
+		<img src="./pic/close.png" style="height:40px;position:absolute;bottom:40px;right:5px;"></img>
+        <img src="./pic/circle.png" style="margin-top:10px;"></img>
+        <div id = "tableHeadDiv" class = "tableHeadDiv">
+            <table class = "table" style="margin:0;">
+                <thead>
+                <tr>
+                <th>Item Name</th>
+                <th>Quantity</th>
+                <th style="text-align:right;">% Left</th>
+                </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+	
+	<div id = "listDiv" class = "col-md-6 col-lg-6 col-md-offset-3 col-lg-offset-3 listDiv" >
+		<table class = "table">
+
+			<tbody id = "list">
+
+			</tbody>
+		</table>
+		
+
+	</div>
+    
+</div>
+</body>
+</html>

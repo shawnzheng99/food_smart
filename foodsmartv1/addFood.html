@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<!--
+author: Chongyang Zheng Shawn
+Date: May 10, 2017
+Version: 0.2
+-->
+<html lang="en">
+
+<head>
+    <title>Food Smart</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+</head>
+
+<body>
+
+    <!--Navbar-->
+    <nav class="navbar navbar-inverse" style="background-color: #77bb99; color: #ffffee; border:1px solid #ffffee">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar" style="background-color: #77bb99; color: #ffffee; border:1px solid #ffffee;">
+                    <span class="icon-bar" style="color: #ffffee;"></span>
+                    <span class="icon-bar" style="color: #ffffee;"></span>
+                    <span class="icon-bar" style="color: #ffffee;"></span>
+                </button>
+                <a class="navbar-brand" href="index.html" style="background-color: #77bb99; color: #ffffee;">Food Smart</a>
+            </div>
+            <div class="collapse navbar-collapse" id="myNavbar" style="background-color: #77bb99; color: #ffffee; border:1px hidden #ffffee;">
+                <ul class="nav navbar-nav">
+                    <li class="active"><a href="track.html" style="background-color: #ffffee; color: #77bb99;">Tracking</a></li>
+                    <li class="dropdown">
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="monthlyReport.html" style="background-color: #77bb99; color: #ffffee;">Report<span class="caret"></span></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="monthlyReport.html" style="background-color: #77bb99; color: #ffffee;">Monthly</a></li>
+                            <li><a href="historyReport.html" style="background-color: #77bb99; color: #ffffee;">History</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="others.html" style="background-color: #77bb99; color: #ffffee;">Others</a></li>
+
+                </ul>
+
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <br>
+        <div class="row">
+            <div class="col-sm-3"></div>
+            <!--3 small column to make body centre-->
+            <div class="col-sm-6">
+                <form>
+                    <table class="table">
+                        <!--input form for add new item -->
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>Add new food item</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><label for="foodName">Food Name:</label></td>
+                                <div id="nameWrong"></div>
+                                <td><input type="text" class="form-control" name="foodName" id="foodName" placeholder="Please enter food name" onblur="valiName()"></td>
+                            </tr>
+
+                            <tr>
+                                <td><label for="amount">Amount :</label></td>
+                                <td><input type="text" class="form-control" name="amount" id="amount" placeholder="Please enter amount of food with units"></td>
+                            </tr>
+                            <tr>
+                                <td><label for="price">Price:</label></td>
+                                <div class="priceWrong"></div>
+                                <td><input type="number" class="form-control" name="price" id="price" placeholder="Please enter the price" onblur="valiPrice()"></td>
+                            </tr>
+                            <tr>
+                                <td><label for="expireDate">Expire Date:</label></td>
+                                <div class="dateWrong"></div>
+                                <td><input type="date" class="form-control" name="expireDate" id="expireDate" onblur="valiDate()"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </form>
+
+                <button type="submit" class="btn btn-warning btn-block">Submit</button>
+                <a href="track.html" class="btn btn-warning btn-block">Reset</a><br>
+            </div>
+            <div class="col-sm-3"></div>
+            <!--3 small column to make body centre-->
+        </div>
+    </div>
+
+
+    <!--JS validation
+<script>
+    function valiName() {
+        if ($("foodName").value.length >= 20) {
+            $("foodName").className = "err";
+            $("nameWrong").innerHTML = "The name length limits at 20 characters";
+        }
+    }
+    function valiPrice() {
+        if (isNaN($("price"))) {
+            $("price").className = "err";
+            $("priceWrong").innerHTML = "Please enter a number";
+        }
+    }
+    function valiDate() {
+        if(isNaN($("expireDate"))){
+            $("expireDate").className = "err";
+            $("dateWrong").innerHTML = "Please choose a date to expire";
+        }
+
+    }
+
+
+</script>
+-->
+
+</body>
+
+</html>

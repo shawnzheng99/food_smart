@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Food Smart</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" media="screen">
+    <script src="http://cdn.static.runoob.com/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script src="http://cdn.static.runoob.com/libs/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+</head>
+
+<body>
+
+
+
+<div class="container-fluid" style="padding: 0;">
+
+
+
+    <!--Navbar-->
+    <nav class="navbar navbar-inverse" style="background-color: #77bb99; color: #ffffee; border:1px solid #ffffee">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar" style="background-color: #77bb99; color: #ffffee; border:1px solid #ffffee;">
+                    <span class="icon-bar" style="color: #ffffee;"></span>
+                    <span class="icon-bar" style="color: #ffffee;"></span>
+                    <span class="icon-bar" style="color: #ffffee;"></span>
+                </button>
+                <a class="navbar-brand" href="index.html" style="background-color: #77bb99; color: #ffffee;">Food Smart</a>
+            </div>
+            <div class="collapse navbar-collapse" id="myNavbar" style="background-color: #77bb99; color: #ffffee; border:1px hidden #ffffee;">
+                <ul class="nav navbar-nav">
+                    <li><a href="track.html" style="background-color: #77bb99; color: #ffffee;">Tracking</a></li>
+                    <li class="dropdown">
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="monthlyReport.html" style="background-color: #77bb99; color: #ffffee;">Report<span class="caret"></span></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="monthlyReport.html" style="background-color: #77bb99; color: #ffffee;">Monthly</a></li>
+                            <li class="active"><a href="historyReport.html" style="background-color: #ffffee; color: #77bb99;">History</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="others.html" style="background-color: #77bb99; color: #ffffee;">Others</a></li>
+
+                </ul>
+
+            </div>
+        </div>
+    </nav>
+
+
+    <!--Monthly Report-->
+    <div class="col-md-6 col-lg-6 col-md-offset-3 col-lg-offset-3">
+        <div class="text-left" style="margin-top: 5%;">
+            <h2 class="text-center">History Report</h2>
+            <h3 class="text-left">January to June, 2017</h3>
+            <img src="./pic/BarChart.png" class="img-thumbnail" alt="BarChart" width="600" height="400">
+            <table class="table" border="0" style="margin-top:5%">
+
+                <thead>
+
+                <tr>
+                </tr>
+
+                </thead>
+
+                <tbody>
+
+                <tr>
+                    <td>Highest waste amount</td>
+                    <td>$100</td>
+                </tr>
+                <tr>
+                    <td>Highest waste rate</td>
+                    <td>$20%</td>
+                </tr>
+                <tr>
+                    <td>Lowest waste amount</td>
+                    <td>$20</td>
+                </tr>
+                <tr>
+                    <td>Lowest waste rate</td>
+                    <td>5%</td>
+                </tr>
+
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+
+</div>
+</body>
+</html>
