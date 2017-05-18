@@ -1,0 +1,182 @@
+<!doctype html>
+<html>
+<head>
+<title>History Report</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" media="screen">
+<script src="http://cdn.static.runoob.com/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="http://cdn.static.runoob.com/libs/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<script src="Chart.js"></script>
+<style>
+canvas {
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+}
+</style>
+</head>
+<body>
+<div class="container-fluid" style="padding: 0;">
+<!--Navbar-->
+<nav class="navbar navbar-inverse" style="background-color: #77bb99; color: #ffffee; border:1px solid #ffffee">
+<div class="container-fluid">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar" style="background-color: #77bb99; color: #ffffee; border:1px solid #ffffee;">
+            <span class="icon-bar" style="color: #ffffee;"></span>
+            <span class="icon-bar" style="color: #ffffee;"></span>
+            <span class="icon-bar" style="color: #ffffee;"></span>
+        </button>
+        <a class="navbar-brand" href="#" style="background-color: #77bb99; color: #ffffee;">Food Smart</a>
+    </div>
+
+    <div class="collapse navbar-collapse" id="myNavbar" style="background-color: #77bb99; color: #ffffee; border:1px hidden #ffffee;">
+        <ul class="nav navbar-nav">
+            <li><a href="#" style="background-color: #77bb99; color: #ffffee;">Tracking</a></li>
+            <li class="dropdown">
+                <a class="dropdown-toggle" data-toggle="dropdown" href="#" style="background-color: #ffffee; color: #77bb99;">Report<span class="caret"></span></a>
+                <ul class="dropdown-menu">
+                    <li><a href="#" style="background-color: #77bb99; color: #ffffee;">Monthly</a></li>
+                    <li class="active"><a href="#" style="background-color: #ffffee; color: #77bb99;">History</a></li>
+                </ul>
+            </li>
+            <li><a href="#" style="background-color: #77bb99; color: #ffffee;">Others</a></li>
+
+        </ul>
+
+    </div>
+</div>
+</nav>
+
+<!--History Report-->
+<div class="col-md-6 col-lg-6 col-md-offset-3 col-lg-offset-3">
+<div class="text-left" style="margin-top: 5%;">
+    <h2 class="text-center">Trend Report</h2>
+    <h4 id = "demo"></h4><br><br>
+<div id="container">
+<canvas id="myChart"></canvas>
+</div>
+<script>
+    var dateTrend = "June 1 - June 30, 2017";
+    var dateLabel = ["0-30", "30-60", "60-90", "90-120", "120-150", "150-180"];
+    var totalCost = ["500", "400", "450", "680", "700", "530"];
+    var consumeAmount = ["450", "300", "390", "650", "680", "525"];
+    var wasteAmount = [];
+    var wasteRate = [];
+    var maxAmount = 0;
+    var minAmount = 0;
+    var maxRate = 0;
+    var minRate = 0;
+
+
+    for (i=0; i<= 7; i++){
+        wasteAmount[i]= totalCost[i] - consumeAmount[i];
+    }
+
+    for (i=0; i<= 7; i++){
+        wasteRate[i] = Math.round(wasteAmount [i]/ totalCost [i] * 100);
+    }
+
+    for (i=0; i<= 7; i++) {
+        if(wasteAmount[i]>= maxAmount){
+            maxAmount = wasteAmount[i];
+        }
+    }
+
+    for (i=0; i<= 7; i++) {
+        if(wasteAmount[i]<= maxAmount){
+            minAmount = wasteAmount[i];
+        }
+    }
+
+    for (i=0; i<= 7; i++) {
+        if(wasteRate[i]>= maxRate){
+            maxRate = Math.round(wasteRate[i]);
+        }
+    }
+
+    for (i=0; i<= 7; i++) {
+        if(wasteRate[i]<= maxRate){
+            minRate = Math.round(wasteRate[i]);
+        }
+    }
+
+    var date = "June 1 - June 30, 2017";
+
+
+var ctx = document.getElementById("myChart");
+var myChart = new Chart(ctx, {
+type: 'bar',
+data: {
+    labels: dateLabel,
+    datasets: [{
+
+        data: wasteAmount,
+        label: "Waste Amount ($)",
+        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+        borderWidth: 1
+
+    }, {
+        data: wasteRate,
+        label: "Waste Rate (%)",
+        backgroundColor: 'rgba(54, 162, 235, 0.2)',
+        borderWidth: 1
+    }
+
+    ]
+},
+options: {
+    scales: {
+        yAxes: [{
+            ticks: {
+                beginAtZero:true
+            }
+        }]
+    }
+}
+});
+
+    document.getElementById("demo").innerHTML = dateTrend;
+</script>
+    <table class="table" border="0" style="margin-top:5%">
+
+        <thead>
+
+        <tr>
+        </tr>
+
+        </thead>
+
+        <tbody>
+
+        <tr>
+            <td>Highest waste amount</td>
+            <td id="demo1"></td>
+        </tr>
+        <tr>
+            <td>Highest waste rate</td>
+            <td id="demo2"></td>
+        </tr>
+        <tr>
+            <td>Lowest waste amount</td>
+            <td id="demo3"></td>
+        </tr>
+        <tr>
+            <td>Lowest waste rate</td>
+            <td id="demo4"></td>
+        </tr>
+
+        </tbody>
+    </table>
+    <script>
+        document.getElementById("demo1").innerHTML = "$ " + maxAmount;
+        document.getElementById("demo2").innerHTML = "$ " + minAmount;
+        document.getElementById("demo3").innerHTML = maxRate + " %";
+        document.getElementById("demo4").innerHTML = minRate + " %";
+    </script>
+</div>
+</div>
+</div>
+
+</body>
+</html>

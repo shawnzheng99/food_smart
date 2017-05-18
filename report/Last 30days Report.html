@@ -1,0 +1,176 @@
+<!doctype html>
+<html>
+<head>
+<title>Monthy Report</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" media="screen"><script src="http://cdn.static.runoob.com/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="http://cdn.static.runoob.com/libs/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<script src="Chart.js"></script>
+<style>
+canvas {
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+}
+</style>
+<script src="https://www.gstatic.com/firebasejs/3.9.0/firebase.js"></script>
+<script>
+    // Initialize Firebase
+    var config = {
+        apiKey: "AIzaSyAb9NhdUXgEumko8M6kkF8RLotpEEz3cho",
+        authDomain: "lavender-127.firebaseapp.com",
+        databaseURL: "https://lavender-127.firebaseio.com",
+        projectId: "lavender-127",
+        storageBucket: "lavender-127.appspot.com",
+        messagingSenderId: "18967644527"
+    };
+    firebase.initializeApp(config);
+</script>
+
+</head>
+<body>
+<div class="container-fluid" style="padding: 0;">
+<!--Navbar-->
+<nav class="navbar navbar-inverse" style="background-color: #77bb99; color: #ffffee; border:1px solid #ffffee">
+<div class="container-fluid">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar" style="background-color: #77bb99; color: #ffffee; border:1px solid #ffffee;">
+            <span class="icon-bar" style="color: #ffffee;"></span>
+            <span class="icon-bar" style="color: #ffffee;"></span>
+            <span class="icon-bar" style="color: #ffffee;"></span>
+        </button>
+        <a class="navbar-brand" href="#" style="background-color: #77bb99; color: #ffffee;">Food Smart</a>
+    </div>
+
+    <div class="collapse navbar-collapse" id="myNavbar" style="background-color: #77bb99; color: #ffffee; border:1px hidden #ffffee;">
+        <ul class="nav navbar-nav">
+            <li><a href="#" style="background-color: #77bb99; color: #ffffee;">Tracking</a></li>
+            <li class="dropdown">
+                <a class="dropdown-toggle" data-toggle="dropdown" href="#" style="background-color: #ffffee; color: #77bb99;">Report<span class="caret"></span></a>
+                <ul class="dropdown-menu">
+                    <li class="active"><a href="#" style="background-color: #ffffee; color: #77bb99;">Monthly</a></li>
+                    <li><a href="#" style="background-color: #77bb99; color: #ffffee;">History</a></li>
+                </ul>
+            </li>
+            <li><a href="#" style="background-color: #77bb99; color: #ffffee;">Others</a></li>
+
+        </ul>
+
+    </div>
+</div>
+</nav>
+
+<!--Recent Report-->
+<div class="col-md-6 col-lg-6 col-md-offset-3 col-lg-offset-3">
+<div class="text-left" style="margin-top: 5%;">
+    <h2 class="text-center">Last 30 days Food Wasted</h2>
+    <h4 id = "demo"></h4><br><br>
+<div id="container" style="width: 45%;" class="pull-left">
+<canvas id="myPieChart"></canvas>
+</div>
+    <div id="container1" style="width: 45%;"class="pull-right">
+        <canvas id="myPieChart1"></canvas>
+    </div>
+
+<script>
+var wasteAmount;
+var consumeAmount = 420;
+var wasteRate;
+var consumeRate;
+var totalCost = 500;
+wasteAmount = totalCost - consumeAmount;
+wasteRate = wasteAmount / totalCost * 100;
+consumeRate = consumeAmount / totalCost * 100;
+var dateRecent = "June 1 - June 30, 2017";
+
+
+
+
+
+var ctx = document.getElementById("myPieChart");
+var myPieChart = new Chart(ctx, {
+    type: 'pie',
+    data: {
+        labels: ["Waste($)", "Consume($)"],
+        datasets: [{
+
+            data: [wasteAmount, consumeAmount],
+            backgroundColor: [
+                "#FF6384",
+                "#36A2EB"
+            ],
+            hoverBackgroundColor: [
+                "#FF6384",
+                "#36A2EB"
+            ]
+        }
+
+        ]
+    }
+});var ctx = document.getElementById("myPieChart1");
+var myPieChart1 = new Chart(ctx, {
+    type: 'pie',
+    data: {
+        labels: ["Waste(%)", "Consume(%)"],
+        datasets: [{
+
+            data: [wasteRate, consumeRate],
+            backgroundColor: [
+                "#FF6384",
+                "#36A2EB"
+            ],
+            hoverBackgroundColor: [
+                "#FF6384",
+                "#36A2EB"
+            ]
+        }
+
+        ]
+    }
+});
+
+document.getElementById("demo").innerHTML = dateRecent;
+
+</script>
+    <table class="table" border="0" style="margin-top:45%">
+
+        <thead>
+
+        <tr>
+        </tr>
+
+        </thead>
+
+        <tbody>
+
+        <tr>
+            <td>Food purchse</td>
+            <td id="demo1"></td>
+        </tr>
+        <tr>
+            <td>Food consume</td>
+            <td id="demo2"></td>
+        </tr>
+        <tr>
+            <td>Food waste</td>
+            <td id="demo3"></td>
+        </tr>
+        <tr>
+            <td>Waste rate</td>
+            <td id="demo4"></td>
+        </tr>
+
+        </tbody>
+    </table>
+    <script>
+        document.getElementById("demo1").innerHTML = "$ " + totalCost;
+        document.getElementById("demo2").innerHTML = "$ " + consumeAmount;
+        document.getElementById("demo3").innerHTML = wasteAmount + " %";
+        document.getElementById("demo4").innerHTML = wasteRate + " %";
+    </script>
+</div>
+</div>
+</div>
+</body>
+</html>
