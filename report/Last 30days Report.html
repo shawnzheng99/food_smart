@@ -7,6 +7,7 @@
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" media="screen"><script src="http://cdn.static.runoob.com/libs/jquery/2.1.1/jquery.min.js"></script>
 <script src="http://cdn.static.runoob.com/libs/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 <script src="Chart.js"></script>
+<script src="https://www.gstatic.com/firebasejs/3.9.0/firebase.js"></script>
 <style>
 canvas {
     -moz-user-select: none;
@@ -14,19 +15,60 @@ canvas {
     -ms-user-select: none;
 }
 </style>
-<script src="https://www.gstatic.com/firebasejs/3.9.0/firebase.js"></script>
 <script>
     // Initialize Firebase
     var config = {
-        apiKey: "AIzaSyAb9NhdUXgEumko8M6kkF8RLotpEEz3cho",
-        authDomain: "lavender-127.firebaseapp.com",
-        databaseURL: "https://lavender-127.firebaseio.com",
-        projectId: "lavender-127",
-        storageBucket: "lavender-127.appspot.com",
-        messagingSenderId: "18967644527"
+        apiKey: "AIzaSyDXBcfWwEiAaH6hvW0UGTiXuIeAN_iSR1U",
+        authDomain: "mytest-4a947.firebaseapp.com",
+        databaseURL: "https://mytest-4a947.firebaseio.com",
+        projectId: "mytest-4a947",
+        storageBucket: "mytest-4a947.appspot.com",
+        messagingSenderId: "1093830148119"
     };
     firebase.initializeApp(config);
+    var uid = "7ZSwmnir7vSyiLwolwaUxAz6z8H2";
+
+    var db = firebase.database();
+
+    var recentTotal = 0;
+    var recentWaste = 0;
+
+    listref = db.ref("/" + uid + "/History/").orderByChild("expDate").once('value').then(function(snapshot) {
+        foodList = snapshot.val();
+        snapshot.forEach(function(child) {
+            var days = getDaysLeft(child.val()["expDate"])
+            if (days <= 0 && days > -30) {
+                recentTotal += child.val()['price']
+                recentWaste += child.val()['price'] * child.val()['percentLeft'] / 100
+            }
+        });
+
+        //draw graph
+
+        drawgraph()
+
+    });
+
+
+
+    function getDaysLeft(date)
+    {
+        var d = new Date(date);
+        var userTimezoneOffset = d.getTimezoneOffset() * 60000;
+        d = new Date(d.getTime() + userTimezoneOffset);
+        today = new Date();
+        var oneDay = 24*60*60*1000;
+
+        return Math.ceil((d.getTime() - today.getTime())/(oneDay))
+    }
+
+
+
+
 </script>
+
+
+
 
 </head>
 <body>
@@ -64,8 +106,8 @@ canvas {
 <!--Recent Report-->
 <div class="col-md-6 col-lg-6 col-md-offset-3 col-lg-offset-3">
 <div class="text-left" style="margin-top: 5%;">
-    <h2 class="text-center">Last 30 days Food Wasted</h2>
-    <h4 id = "demo"></h4><br><br>
+    <h2 class="text-center">Recent Wastage</h2>
+    <h5 id = "demo" class="text-center"></h5><br><br>
 <div id="container" style="width: 45%;" class="pull-left">
 <canvas id="myPieChart"></canvas>
 </div>
@@ -74,64 +116,68 @@ canvas {
     </div>
 
 <script>
-var wasteAmount;
-var consumeAmount = 420;
-var wasteRate;
-var consumeRate;
-var totalCost = 500;
-wasteAmount = totalCost - consumeAmount;
-wasteRate = wasteAmount / totalCost * 100;
-consumeRate = consumeAmount / totalCost * 100;
-var dateRecent = "June 1 - June 30, 2017";
+
+    function  drawgraph() {
+        var wasteAmount = recentWaste.toFixed(2);
+        var totalCost = recentTotal;
+        var consumeAmount = (recentTotal - recentWaste).toFixed(2);
+        var wasteRate;
+        var consumeRate;
+
+        wasteRate = Math.round(wasteAmount / totalCost * 100);
+        consumeRate = Math.round(consumeAmount / totalCost * 100);
+        var dateRecent = "(Over 30 days Food Waste)";
 
 
+        var ctx = document.getElementById("myPieChart");
+        var myPieChart = new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels: ["Waste($)", "Consume($)"],
+                datasets: [{
 
+                    data: [wasteAmount, consumeAmount],
+                    backgroundColor: [
+                        "#FF6384",
+                        "#36A2EB"
+                    ],
+                    hoverBackgroundColor: [
+                        "#FF6384",
+                        "#36A2EB"
+                    ]
+                }
 
+                ]
+            }
+        });
+        var ctx = document.getElementById("myPieChart1");
+        var myPieChart1 = new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels: ["Waste(%)", "Consume(%)"],
+                datasets: [{
 
-var ctx = document.getElementById("myPieChart");
-var myPieChart = new Chart(ctx, {
-    type: 'pie',
-    data: {
-        labels: ["Waste($)", "Consume($)"],
-        datasets: [{
+                    data: [wasteRate, consumeRate],
+                    backgroundColor: [
+                        "#FF6384",
+                        "#36A2EB"
+                    ],
+                    hoverBackgroundColor: [
+                        "#FF6384",
+                        "#36A2EB"
+                    ]
+                }
 
-            data: [wasteAmount, consumeAmount],
-            backgroundColor: [
-                "#FF6384",
-                "#36A2EB"
-            ],
-            hoverBackgroundColor: [
-                "#FF6384",
-                "#36A2EB"
-            ]
-        }
+                ]
+            }
+        });
 
-        ]
+        document.getElementById("demo").innerHTML = dateRecent;
+        document.getElementById("demo1").innerHTML = "$ " + totalCost;
+        document.getElementById("demo2").innerHTML = "$ " + consumeAmount;
+        document.getElementById("demo3").innerHTML = "$ " + wasteAmount;
+        document.getElementById("demo4").innerHTML = wasteRate + " %";
     }
-});var ctx = document.getElementById("myPieChart1");
-var myPieChart1 = new Chart(ctx, {
-    type: 'pie',
-    data: {
-        labels: ["Waste(%)", "Consume(%)"],
-        datasets: [{
-
-            data: [wasteRate, consumeRate],
-            backgroundColor: [
-                "#FF6384",
-                "#36A2EB"
-            ],
-            hoverBackgroundColor: [
-                "#FF6384",
-                "#36A2EB"
-            ]
-        }
-
-        ]
-    }
-});
-
-document.getElementById("demo").innerHTML = dateRecent;
-
 </script>
     <table class="table" border="0" style="margin-top:45%">
 
@@ -163,12 +209,6 @@ document.getElementById("demo").innerHTML = dateRecent;
 
         </tbody>
     </table>
-    <script>
-        document.getElementById("demo1").innerHTML = "$ " + totalCost;
-        document.getElementById("demo2").innerHTML = "$ " + consumeAmount;
-        document.getElementById("demo3").innerHTML = wasteAmount + " %";
-        document.getElementById("demo4").innerHTML = wasteRate + " %";
-    </script>
 </div>
 </div>
 </div>

@@ -7,6 +7,7 @@
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" media="screen">
 <script src="http://cdn.static.runoob.com/libs/jquery/2.1.1/jquery.min.js"></script>
 <script src="http://cdn.static.runoob.com/libs/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/3.9.0/firebase.js"></script>
 <script src="Chart.js"></script>
 <style>
 canvas {
@@ -15,6 +16,57 @@ canvas {
     -ms-user-select: none;
 }
 </style>
+<script>
+
+    // Initialize Firebase
+    var config = {
+        apiKey: "AIzaSyDXBcfWwEiAaH6hvW0UGTiXuIeAN_iSR1U",
+        authDomain: "mytest-4a947.firebaseapp.com",
+        databaseURL: "https://mytest-4a947.firebaseio.com",
+        projectId: "mytest-4a947",
+        storageBucket: "mytest-4a947.appspot.com",
+        messagingSenderId: "1093830148119"
+    };
+    firebase.initializeApp(config);
+    var uid = "7ZSwmnir7vSyiLwolwaUxAz6z8H2";
+
+    var db = firebase.database();
+    var periodtotal = [0, 0, 0, 0, 0, 0];
+    var periodwaste = [0, 0, 0, 0, 0, 0];
+
+
+    listref = db.ref("/" + uid + "/History/").orderByChild("expDate").once('value').then(function(snapshot) {
+        foodList = snapshot.val();
+        snapshot.forEach(function(child) {
+            var period = Math.floor((-getDaysLeft(child.val()["expDate"])) / 30)
+            if (period >=0) {
+                periodtotal[period] += child.val()['price']
+                periodwaste[period] += child.val()['price'] * child.val()['percentLeft'] / 100
+            }
+        });
+
+        //draw graph
+
+        drawgraph()
+
+    });
+
+    function getDaysLeft(date)
+    {
+        var d = new Date(date);
+        var userTimezoneOffset = d.getTimezoneOffset() * 60000;
+        d = new Date(d.getTime() + userTimezoneOffset);
+        today = new Date();
+        var oneDay = 24*60*60*1000;
+
+        return Math.ceil((d.getTime() - today.getTime())/(oneDay))
+    }
+
+
+</script>
+
+
+
 </head>
 <body>
 <div class="container-fluid" style="padding: 0;">
@@ -51,92 +103,130 @@ canvas {
 <!--History Report-->
 <div class="col-md-6 col-lg-6 col-md-offset-3 col-lg-offset-3">
 <div class="text-left" style="margin-top: 5%;">
-    <h2 class="text-center">Trend Report</h2>
-    <h4 id = "demo"></h4><br><br>
-<div id="container">
-<canvas id="myChart"></canvas>
-</div>
+    <h2 class="text-center">Long-Term Trend</h2>
+    <h5 id = "demo" class="text-center"></h5><br><br>
+    <div id="container" style="width: 100%;">
+        <canvas id="myChart"></canvas>
+    </div>
+    <div id="container1" style="width: 100%;">
+        <canvas id="myChart1"></canvas>
+    </div>
 <script>
-    var dateTrend = "June 1 - June 30, 2017";
-    var dateLabel = ["0-30", "30-60", "60-90", "90-120", "120-150", "150-180"];
-    var totalCost = ["500", "400", "450", "680", "700", "530"];
-    var consumeAmount = ["450", "300", "390", "650", "680", "525"];
-    var wasteAmount = [];
-    var wasteRate = [];
-    var maxAmount = 0;
-    var minAmount = 0;
-    var maxRate = 0;
-    var minRate = 0;
 
+    function  drawgraph() {
+        var dateTrend = "(Over 180 days Food Waste)";
+        var dateLabel = ["0-30", "30-60", "60-90", "90-120", "120-150", "150-180"];
+        var totalCost = periodtotal;
+        var wasteAmount = periodwaste;
+        var wasteRate = [0, 0, 0, 0, 0, 0];
 
-    for (i=0; i<= 7; i++){
-        wasteAmount[i]= totalCost[i] - consumeAmount[i];
-    }
-
-    for (i=0; i<= 7; i++){
-        wasteRate[i] = Math.round(wasteAmount [i]/ totalCost [i] * 100);
-    }
-
-    for (i=0; i<= 7; i++) {
-        if(wasteAmount[i]>= maxAmount){
-            maxAmount = wasteAmount[i];
+        for (i=0; i<6; i++){
+            wasteRate[i] = Math.round(wasteAmount[i] / totalCost[i] * 100);
         }
-    }
 
-    for (i=0; i<= 7; i++) {
-        if(wasteAmount[i]<= maxAmount){
-            minAmount = wasteAmount[i];
+        for (i=0; i<6; i++){
+            wasteAmount[i] = wasteAmount[i].toFixed(2)
         }
-    }
 
-    for (i=0; i<= 7; i++) {
-        if(wasteRate[i]>= maxRate){
-            maxRate = Math.round(wasteRate[i]);
-        }
-    }
+        var maxAmount = 0;
+        var maxRate = 0;
+        var minAmount;
+        var minRate;
 
-    for (i=0; i<= 7; i++) {
-        if(wasteRate[i]<= maxRate){
-            minRate = Math.round(wasteRate[i]);
-        }
-    }
-
-    var date = "June 1 - June 30, 2017";
-
-
-var ctx = document.getElementById("myChart");
-var myChart = new Chart(ctx, {
-type: 'bar',
-data: {
-    labels: dateLabel,
-    datasets: [{
-
-        data: wasteAmount,
-        label: "Waste Amount ($)",
-        backgroundColor: 'rgba(255, 99, 132, 0.2)',
-        borderWidth: 1
-
-    }, {
-        data: wasteRate,
-        label: "Waste Rate (%)",
-        backgroundColor: 'rgba(54, 162, 235, 0.2)',
-        borderWidth: 1
-    }
-
-    ]
-},
-options: {
-    scales: {
-        yAxes: [{
-            ticks: {
-                beginAtZero:true
+        for (i=0; i<6; i++) {
+            if (wasteAmount[i] > maxAmount) {
+                maxAmount = wasteAmount[i]
             }
-        }]
-    }
-}
-});
+        }
 
-    document.getElementById("demo").innerHTML = dateTrend;
+            var tempAmount = maxAmount;
+
+        for (i=0; i<6; i++){
+            if (wasteAmount[i] < tempAmount){
+                minAmount = wasteAmount[i]
+                tempAmount = wasteAmount[i]
+            }
+            else{
+                minAmount = tempAmount
+            }
+        }
+
+        for (i=0; i<6; i++){
+            if (wasteRate[i] > maxRate){
+                maxRate = wasteRate[i]
+            }
+        }
+
+            var tempRate = maxRate;
+
+        for (i=0; i<6; i++){
+            if (wasteRate[i] < tempRate){
+                minRate = wasteRate[i]
+                tempRate = wasteRate[i]
+            }
+            else{
+                minRate = tempRate
+            }
+        }
+
+
+        var ctx = document.getElementById("myChart");
+        var myChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: dateLabel,
+                datasets: [{
+
+                    data: wasteAmount,
+                    label: "Waste Amount ($)",
+                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                    borderWidth: 1
+                }
+                ]
+            },
+            options: {
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: true
+                        }
+                    }]
+                }
+            }
+        });
+
+        var ctx = document.getElementById("myChart1");
+        var myChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: dateLabel,
+                datasets: [ {
+                    data: wasteRate,
+                    label: "Waste Rate (%)",
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    borderWidth: 1
+                }
+
+                ]
+            },
+            options: {
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: true
+                        }
+                    }]
+                }
+            }
+        });
+
+
+        document.getElementById("demo").innerHTML = dateTrend;
+        document.getElementById("demo1").innerHTML = "$ " + maxAmount;
+        document.getElementById("demo2").innerHTML = "$ " + minAmount;
+        document.getElementById("demo3").innerHTML = maxRate + " %";
+        document.getElementById("demo4").innerHTML = minRate + " %";
+    }
 </script>
     <table class="table" border="0" style="margin-top:5%">
 
@@ -150,30 +240,25 @@ options: {
         <tbody>
 
         <tr>
-            <td>Highest waste amount</td>
+            <td>Maximum Waste Amount</td>
             <td id="demo1"></td>
         </tr>
         <tr>
-            <td>Highest waste rate</td>
+            <td>Minimum Waste Amount</td>
             <td id="demo2"></td>
         </tr>
         <tr>
-            <td>Lowest waste amount</td>
+            <td>Maximum Waste Rate</td>
             <td id="demo3"></td>
         </tr>
         <tr>
-            <td>Lowest waste rate</td>
+            <td>Minimum Waste Rate</td>
             <td id="demo4"></td>
         </tr>
 
         </tbody>
     </table>
-    <script>
-        document.getElementById("demo1").innerHTML = "$ " + maxAmount;
-        document.getElementById("demo2").innerHTML = "$ " + minAmount;
-        document.getElementById("demo3").innerHTML = maxRate + " %";
-        document.getElementById("demo4").innerHTML = minRate + " %";
-    </script>
+
 </div>
 </div>
 </div>
