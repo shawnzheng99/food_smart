@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Tracking</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="style/list.css">
+    <script src="https://www.gstatic.com/firebasejs/4.0.0/firebase.js"></script>
+    <script>
+
+        var foodColor0 = 'rgba(255, 99, 132, 0.2)'
+        var foodColor0Selected = 'rgba(231, 233, 237, 0.2)'
+        var foodColor1 = 'rgba(255, 206, 86, 0.2)'
+        var foodColor1Selected = 'rgba(231, 233, 237, 0.2)'
+        var foodColor2 = 'rgba(125, 255, 192, 0.2)'
+        var foodColor2Selected = 'rgba(231, 233, 237, 0.2)'
+
+        var foodList;
+        var keys = [];
+        var currentKey;
+        var db;
+        var listref;
+        var uid;
+        // Initialize Firebase
+
+        var config = {
+            apiKey: "AIzaSyDIpNijaAVY9eHLjRmgBLLNkQHZs58e_DU",
+            authDomain: "foodsmart-556eb.firebaseapp.com",
+            databaseURL: "https://foodsmart-556eb.firebaseio.com",
+            projectId: "foodsmart-556eb",
+            storageBucket: "foodsmart-556eb.appspot.com",
+            messagingSenderId: "309661839555"
+        };
+        firebase.initializeApp(config);
+
+        // check user status
+        firebase.auth().onAuthStateChanged(firebaseUser => {
+            if (!firebaseUser) {
+                alert("Not logged in");
+                window.location = "index.html";
+            } else {
+                uid = firebaseUser.uid;
+
+                console.log("logged in");
+                db = firebase.database();
+
+                listref = db.ref("/" + uid + "/Tracking/").orderByChild("expDate").once('value').then(function (snapshot) {
+                    foodList = snapshot.val();
+                    snapshot.forEach(function (child) {
+                        var key = child.key;
+                        keys.push(key);
+                        foodList[key].daysLeft = getDaysLeft(foodList[key]['expDate']);
+                        displayItem(key, foodList[key])
+                    });
+                });
+
+            }
+        });
+        //uid = firebaseUser.uid;
+
+
+        //display datail of item
+        function displayDetail(key) {
+            var days
+            if (currentKey) {
+                days = foodList[currentKey]['daysLeft']
+                if (days <= 0) {
+                    $('#' + currentKey).css("background-color", foodColor0)
+                } else if (days <= 5) {
+                    $('#' + currentKey).css("background-color", foodColor1)
+                } else {
+                    $('#' + currentKey).css("background-color", foodColor2)
+                }
+            }
+            currentKey = key;
+            days = foodList[key]['daysLeft']
+            if (days <= 0) {
+                $('#' + key).css("background-color", foodColor0Selected)
+                $('#detailPic').css("background-color", foodColor0)
+                $('#detailText').text('Expired')
+            } else if (days <= 5) {
+                $('#' + key).css("background-color", foodColor1Selected)
+                $('#detailPic').css("background-color", foodColor1)
+                $('#detailText').text(days + ' days left')
+            } else {
+                $('#' + key).css("background-color", foodColor2Selected)
+                $('#detailPic').css("background-color", foodColor2)
+                $('#detailText').text(days + ' days left')
+            }
+        }
+
+
+        function displayItem(key, item) {
+            var list = document.getElementById("list");
+            var row = list.insertRow();
+
+            $(row).click(function () {
+                displayDetail(key);
+            });
+            if (item['daysLeft'] <= 0) {
+                $(row).css("background-color", foodColor0)
+            } else if (item['daysLeft'] <= 5) {
+                $(row).css("background-color", foodColor1)
+            } else {
+                $(row).css("background-color", foodColor2)
+            }
+            row.id = key;
+            var cell1 = row.insertCell();
+            var cell2 = row.insertCell();
+            var cell3 = row.insertCell();
+
+            cell1.innerHTML = item.name;
+            cell2.innerHTML = item.quantity;
+
+            var pctText = $('<span />');
+            $(pctText).text(item['percentLeft'] + '% ')
+
+            var consumeB = $('<button />');
+            $(consumeB).addClass('btn btn-default btn-sm');
+            $(consumeB).html('<span class=\"glyphicon glyphicon-minus\"></span>');
+            $(consumeB).click(function (event) {
+                event.stopPropagation();
+                //function for consuming 5% of a food item
+                var pctLeft = foodList[key]['percentLeft'];
+                if (pctLeft <= 5) {
+                    //put item into history
+                    foodList[key]['percentLeft'] = 0;
+                    $(row).remove()
+                    $('#detailPic').css("background-color", 'white')
+                    $('#detailText').text('')
+                    var update = {};
+                    var newKey = db.ref('/' + uid + '/History/').push().key
+                    var update = {};
+                    update[newKey] = foodList[key]
+                    db.ref('/' + uid + '/History/').update(update);
+                    db.ref('/' + uid + '/Tracking/' + key + '/').remove()
+                } else {
+                    // decrement item
+                    foodList[key]['percentLeft'] -= 5;
+                    $(pctText).text(foodList[key]['percentLeft'] + '% ')
+                    db.ref("/" + uid + "/Tracking/" + key + "/").update({'percentLeft': foodList[key]['percentLeft']})
+                }
+            });
+
+            $(cell3).append($(pctText));
+            $(cell3).append($(consumeB));
+
+            cell2.style.textAlign = "center";
+            cell3.style.textAlign = "right"
+        }
+
+        function test(a) {
+            alert(a);
+        }
+
+        function deleteCurrent() {
+            $('#' + currentKey).remove()
+            $('#detailPic').css("background-color", 'white')
+            $('#detailText').text('')
+            db.ref("/" + uid + "/Tracking/" + currentKey + "/").remove()
+        }
+
+        function trashCurrent() {
+            $('#' + currentKey).remove()
+            $('#detailPic').css("background-color", 'white')
+            $('#detailText').text('')
+            var newKey = db.ref('/' + uid + '/History/').push().key
+            var update = {};
+            update[newKey] = foodList[currentKey]
+            db.ref('/' + uid + '/History/').update(update);
+            db.ref('/' + uid + '/Tracking/' + currentKey + '/').remove()
+        }
+
+        // date format: yyyy-mm-dd
+        function getDaysLeft(date) {
+            var d = new Date(date);
+            var userTimezoneOffset = d.getTimezoneOffset() * 60000;
+            d = new Date(d.getTime() + userTimezoneOffset);
+            today = new Date();
+            var oneDay = 24 * 60 * 60 * 1000;
+
+            return Math.ceil((d.getTime() - today.getTime()) / (oneDay))
+        }
+
+        //        onload = displayAll
+    </script>
+
+    <script>
+
+    </script>
+</head>
+<body>
+
+<!--Navbar-->
+<nav class="navbar navbar-inverse" style="background-color: #77bb99; color: #ffffee; border:1px solid #ffffee">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar"
+                    style="background-color: #77bb99; color: #ffffee; border:1px solid #ffffee;">
+                <span class="icon-bar" style="color: #ffffee;"></span>
+                <span class="icon-bar" style="color: #ffffee;"></span>
+                <span class="icon-bar" style="color: #ffffee;"></span>
+            </button>
+            <a class="navbar-brand" href="index.html" style="background-color: #77bb99; color: #ffffee;">Food Smart</a>
+        </div>
+        <div class="collapse navbar-collapse" id="myNavbar"
+             style="background-color: #77bb99; color: #ffffee; border:1px hidden #ffffee;">
+            <ul class="nav navbar-nav">
+                <li class="active"><a href="track.html" style="background-color: #ffffee; color: #77bb99;">Tracking</a>
+                </li>
+                <li class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="monthlyReport.html"
+                       style="background-color: #77bb99; color: #ffffee;">Report<span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="monthlyReport.html" style="background-color: #77bb99; color: #ffffee;">Monthly</a>
+                        </li>
+                        <li><a href="historyReport.html" style="background-color: #77bb99; color: #ffffee;">History</a>
+                        </li>
+                    </ul>
+                </li>
+                <li><a href="others.html" style="background-color: #77bb99; color: #ffffee;">Others</a></li>
+
+            </ul>
+
+        </div>
+    </div>
+</nav>
+<!--end of navbar-->
+
+
+<div id="all" class="container-fluid all">
+
+    <div id="detail" class="col-md-6 col-lg-6 col-md-offset-3 col-lg-offset-3 detail">
+        <a href="addFood.html">
+            <button type="button" class="btn btn-default" style="height:40px;position:absolute;top:5px;left:5px;"><span
+                    class="glyphicon glyphicon-plus"></span></button>
+        </a>
+        <button type="button" onclick="trashCurrent()" class="btn btn-default"
+                style="height:40px;position:absolute;top:5px;right:5px;"><span class="glyphicon glyphicon-trash"></span>
+        </button>
+        <button type="button" onclick="deleteCurrent()" class="btn btn-default"
+                style="height:40px;position:absolute;bottom:40px;right:5px;"><span
+                class="glyphicon glyphicon-remove"></span></button>
+        <div id="detailPic" class="detailPic"><p id="detailText" class="detailText"></p></div>
+        <div id="tableHeadDiv" class="tableHeadDiv">
+            <table class="table" style="margin:0;">
+                <thead>
+                <tr>
+                    <th>Item Name</th>
+                    <th>Quantity</th>
+                    <th style="text-align:right;">% Left</th>
+                </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+
+    <div id="listDiv" class="col-md-6 col-lg-6 col-md-offset-3 col-lg-offset-3 listDiv">
+        <table class="table">
+
+            <tbody id="list">
+
+            </tbody>
+        </table>
+
+
+    </div>
+
+</div>
+</body>
+</html>
